@@ -27,4 +27,25 @@ public class HistoricEvent implements Serializable {
     private LocalDateTime createdAt;
 
     public HistoricEvent() { }
+
+    public HistoricEvent(String description) {
+        this.description = description;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public void addMission(Mission aMission) {
+        this.mission = aMission;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Mission getMission() {
+        return this.mission;
+    }
+
+    public UUID getUUID() {
+        return this.uuid;
+    }
 }

@@ -28,5 +28,23 @@ public class Mission implements Serializable {
     private LocalDateTime createdAt;
 
     public Mission() {
+        //left blank to make JPA happy
+    }
+
+    public Mission(String title){
+        this.title = title;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public void setAssignedHero(SuperHero assignedHero) {
+        this.assignedHero = assignedHero;
+    }
+
+    public SuperHero getAssignedHero() {
+        return assignedHero;
+    }
+
+    public UUID getUUID() {
+        return this.uuid;
     }
 }
