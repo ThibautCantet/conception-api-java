@@ -1,10 +1,10 @@
 package fr.soat.training.api.superhero.repository;
 
 import fr.soat.training.api.superhero.BaseRepositoryTest;
-import fr.soat.training.api.superhero.domain.HistoricEvent;
-import fr.soat.training.api.superhero.domain.Mission;
-import fr.soat.training.api.superhero.domain.SuperHero;
-import fr.soat.training.api.superhero.domain.SuperHeroBuilder;
+import fr.soat.training.api.superhero.domain.*;
+import fr.soat.training.api.superhero.domain.builders.HistoricEventBuilder;
+import fr.soat.training.api.superhero.domain.builders.MissionBuilder;
+import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
@@ -19,16 +19,16 @@ public class HistoricEventRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void create_a_new_historic_event_linked_to_a_mission() {
-        SuperHero savedHero = superHeroRepository.save(malicia);
+        SuperHero savedHero = superHeroRepository.saveAndFlush(malicia);
 
         Mission aMission = new MissionBuilder().createMission("Save the X-Men !").assignedTo(savedHero).build();
-        Mission savedMission = this.missionRepository.save(aMission);
+        Mission savedMission = this.missionRepository.saveAndFlush(aMission);
 
         HistoricEvent theEvent = new HistoricEventBuilder().createAction("Takes off her gloves !")
                 .madeDuringTheMission(savedMission)
                 .build();
 
-        HistoricEvent historicEvent = this.historicEventRepository.save(theEvent);
+        HistoricEvent historicEvent = this.historicEventRepository.saveAndFlush(theEvent);
         Assertions.assertThat(historicEvent)
                 .as("Malicia should have taken off ther gloves")
                 .isNotNull()
@@ -40,15 +40,15 @@ public class HistoricEventRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void retrieve_an_historical_event_given_an_uuid() {
-        SuperHero savedHero = superHeroRepository.save(malicia);
+        SuperHero savedHero = superHeroRepository.saveAndFlush(malicia);
 
         Mission aMission = new MissionBuilder().createMission("Save the X-Men !").assignedTo(savedHero).build();
-        Mission savedMission = this.missionRepository.save(aMission);
+        Mission savedMission = this.missionRepository.saveAndFlush(aMission);
 
         HistoricEvent theEvent = new HistoricEventBuilder().createAction("Takes off her gloves !")
                 .madeDuringTheMission(savedMission).build();
 
-        HistoricEvent historicEvent = this.historicEventRepository.save(theEvent);
+        HistoricEvent historicEvent = this.historicEventRepository.saveAndFlush(theEvent);
 
 
         Optional<HistoricEvent> found = this.historicEventRepository.findById(historicEvent.getUUID());
@@ -58,11 +58,11 @@ public class HistoricEventRepositoryShould extends BaseRepositoryTest {
     }
 
     @Test
-    void returns_all_the_events_linked_to_a_mission() {
-        SuperHero savedHero = superHeroRepository.save(malicia);
+    void return_all_the_events_linked_to_a_mission() {
+        SuperHero savedHero = superHeroRepository.saveAndFlush(malicia);
 
         Mission aMission = new MissionBuilder().createMission("Save the X-Men !").assignedTo(savedHero).build();
-        Mission savedMission = this.missionRepository.save(aMission);
+        Mission savedMission = this.missionRepository.saveAndFlush(aMission);
         HistoricEvent dressEvent = new HistoricEventBuilder().createAction("Get dressed!").madeDuringTheMission(savedMission).build();
         HistoricEvent glovesEvent = new HistoricEventBuilder().createAction("Take her gloves !").madeDuringTheMission(savedMission).build();
 

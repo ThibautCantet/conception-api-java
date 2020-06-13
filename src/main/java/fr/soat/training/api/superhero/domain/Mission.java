@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -46,5 +47,17 @@ public class Mission implements Serializable {
 
     public UUID getUUID() {
         return this.uuid;
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getHeroName() {
+        return this.assignedHero.getName();
+    }
+
+    public LocalDate getCreateAt() {
+        return this.createdAt.toLocalDate();
     }
 }

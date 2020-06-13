@@ -1,7 +1,6 @@
 package fr.soat.training.api.superhero.repository;
 
 import fr.soat.training.api.superhero.domain.HistoricEvent;
-import liquibase.pro.packaged.U;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

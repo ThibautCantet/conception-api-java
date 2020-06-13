@@ -35,4 +35,11 @@ public class SuperHero implements Serializable {
         return this.uuid;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }

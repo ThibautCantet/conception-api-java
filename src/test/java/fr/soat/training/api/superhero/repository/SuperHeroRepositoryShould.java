@@ -2,7 +2,7 @@ package fr.soat.training.api.superhero.repository;
 
 import fr.soat.training.api.superhero.BaseRepositoryTest;
 import fr.soat.training.api.superhero.domain.SuperHero;
-import fr.soat.training.api.superhero.domain.SuperHeroBuilder;
+import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,7 +16,7 @@ public class SuperHeroRepositoryShould extends BaseRepositoryTest {
     @Test
     void save_a_super_hero_given_a_name() {
 
-        SuperHero savedHero = superHeroRepository.save(batman);
+        SuperHero savedHero = superHeroRepository.saveAndFlush(batman);
 
         Assertions.assertThat(savedHero).as("the hero should have been persisted")
                 .isNotNull()
@@ -26,7 +26,7 @@ public class SuperHeroRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void retrieve_a_super_hero_using_its_uuid() {
-        SuperHero savedHero = superHeroRepository.save(batman);
+        SuperHero savedHero = superHeroRepository.saveAndFlush(batman);
 
         Optional<SuperHero> found = superHeroRepository.findById(savedHero.getUUID());
 
@@ -38,7 +38,7 @@ public class SuperHeroRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void retrieve_a_super_hero_given_a_name() {
-        superHeroRepository.save(batman);
+        superHeroRepository.saveAndFlush(batman);
 
         Optional<SuperHero> found = superHeroRepository.findByName("Batman");
         Assertions.assertThat(found)
@@ -47,8 +47,8 @@ public class SuperHeroRepositoryShould extends BaseRepositoryTest {
     }
 
     @Test
-    void returns_nothing_given_an_unknown_superhero_name() {
-        superHeroRepository.save(batman);
+    void return_nothing_given_an_unknown_superhero_name() {
+        superHeroRepository.saveAndFlush(batman);
 
         Optional<SuperHero> found = superHeroRepository.findByName("Superman");
 
@@ -60,9 +60,9 @@ public class SuperHeroRepositoryShould extends BaseRepositoryTest {
     @Test
     void fail_to_register_a_new_hero_with_the_same_name() {
 
-         superHeroRepository.save(batman);
+         superHeroRepository.saveAndFlush(batman);
 
-        Assertions.assertThatThrownBy(() -> superHeroRepository.save(new SuperHeroBuilder().createSuperHero("Batman")))
+        Assertions.assertThatThrownBy(() -> superHeroRepository.saveAndFlush(new SuperHeroBuilder().createSuperHero("Batman")))
                 .hasMessageStartingWith("could not execute statement;")
                 .isInstanceOf(DataIntegrityViolationException.class);
     }

@@ -1,4 +1,4 @@
-package fr.soat.training.api.superhero.repository;
+package fr.soat.training.api.superhero.domain.builders;
 
 import fr.soat.training.api.superhero.domain.HistoricEvent;
 import fr.soat.training.api.superhero.domain.Mission;

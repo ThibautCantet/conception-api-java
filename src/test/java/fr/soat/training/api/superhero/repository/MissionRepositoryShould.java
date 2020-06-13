@@ -3,7 +3,8 @@ package fr.soat.training.api.superhero.repository;
 import fr.soat.training.api.superhero.BaseRepositoryTest;
 import fr.soat.training.api.superhero.domain.Mission;
 import fr.soat.training.api.superhero.domain.SuperHero;
-import fr.soat.training.api.superhero.domain.SuperHeroBuilder;
+import fr.soat.training.api.superhero.domain.builders.MissionBuilder;
+import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,11 +15,11 @@ public class MissionRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void create_a_new_mission_assigned_to_a_superhero() {
-        SuperHero heroSaved = superHeroRepository.save(superman);
+        SuperHero heroSaved = superHeroRepository.saveAndFlush(superman);
         Mission firstMission = new MissionBuilder()
                 .createMission("Save the world!!").assignedTo(superman).build();
 
-        Mission worldToSave = missionRepository.save(firstMission);
+        Mission worldToSave = missionRepository.saveAndFlush(firstMission);
 
         Assertions.assertThat(worldToSave)
                 .as("The fist mission *save the word* should have been created")
@@ -29,12 +30,12 @@ public class MissionRepositoryShould extends BaseRepositoryTest {
 
     @Test
     void retrieve_a_mission_using_its_uuid() {
-        SuperHero savedSuperHero = superHeroRepository.save(superman);
+        SuperHero savedSuperHero = superHeroRepository.saveAndFlush(superman);
 
         Mission secondMission = new MissionBuilder()
                 .createMission("Save the world again!!").assignedTo(savedSuperHero).build();
 
-        Mission mission = missionRepository.save(secondMission);
+        Mission mission = missionRepository.saveAndFlush(secondMission);
 
         Optional<Mission> found = missionRepository.findById(mission.getUUID());
 

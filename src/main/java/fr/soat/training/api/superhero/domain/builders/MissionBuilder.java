@@ -1,7 +1,8 @@
-package fr.soat.training.api.superhero.repository;
+package fr.soat.training.api.superhero.domain.builders;
 
 import fr.soat.training.api.superhero.domain.Mission;
 import fr.soat.training.api.superhero.domain.SuperHero;
+import fr.soat.training.api.superhero.services.domain.MatchingHero;
 
 public class MissionBuilder {
     private Mission mission;
@@ -20,6 +21,16 @@ public class MissionBuilder {
         return this;
     }
 
+    public MissionBuilder assignedTo(String heroName) {
+        if (this.mission == null) {
+            throw new IllegalArgumentException("the mission is mandataroy");
+        }
+        SuperHero hero = new SuperHero(heroName);
+        this.mission.setAssignedHero(hero);
+
+        return this;
+    }
+
     public Mission build() {
         if (this.mission == null) {
             throw new IllegalArgumentException("the mission is mandataroy");
@@ -30,4 +41,5 @@ public class MissionBuilder {
         }
         return this.mission;
     }
+
 }

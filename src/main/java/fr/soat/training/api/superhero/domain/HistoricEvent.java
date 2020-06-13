@@ -48,4 +48,8 @@ public class HistoricEvent implements Serializable {
     public UUID getUUID() {
         return this.uuid;
     }
+
+    public LocalDateTime getCreatedAt() {
+        return this.createdAt;
+    }
 }

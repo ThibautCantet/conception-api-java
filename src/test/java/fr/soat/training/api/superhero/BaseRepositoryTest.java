@@ -5,11 +5,10 @@ import fr.soat.training.api.superhero.repository.MissionRepository;
 import fr.soat.training.api.superhero.repository.SuperHeroRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@ActiveProfiles(value = "test")
-@SpringBootTest
+
+@DataJpaTest
 public class BaseRepositoryTest {
 
     @Autowired

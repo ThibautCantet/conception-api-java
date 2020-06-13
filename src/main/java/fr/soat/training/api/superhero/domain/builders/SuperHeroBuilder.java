@@ -1,4 +1,6 @@
-package fr.soat.training.api.superhero.domain;
+package fr.soat.training.api.superhero.domain.builders;
+
+import fr.soat.training.api.superhero.domain.SuperHero;
 
 public class SuperHeroBuilder {
 
