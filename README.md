@@ -5,7 +5,7 @@ Il est essentiel de vérifier que l'existant fonctionne sur votre poste.
 
 ### Déploiement de l'application
 
-* Depuis votre terminal, exécutez la commande :  
+* Depuis votre terminal, executez la commande :  
 
         ``mvn spring:boot-run``
 
@@ -37,11 +37,32 @@ Nous utilisons [H2](https://h2database.com/html/main.html) pour la persistance (
     * Lister les entrées de la table super_hero:     `` select * from super_hero``
        ![image info](src/main/resources/assets/listing_heroes.JPG)
 
-- [x] Tout marche bien ? Chouette ! Vous pouvez passer à la suite !
+- [x] Tout marche bien ? Chouette ! Tous les tests sont-ils au vert ?
 
 ### Execution des tests
  
+* Depuis votre terminal, executez la commande :  
 
+        ``mvn clean test``
+
+- [x] Vérifiez bien que vous lancez la commande depuis la racine du projet.
+
+Vous devriez avoir le message ci-dessous dans le terminal:
+
+    ``
+    ...
+    [INFO] Results:
+    [INFO]
+    [INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0
+    [INFO]
+    [INFO] ------------------------------------------------------------------------
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    ...
+    
+``
+Si vous choisissez de lancer les tests depuis votre IDE ( clic droit > run all tests), vous verrez la barre verte \o/ 
+![image info](src/main/resources/assets/all_green.JPG)
 
 ## TP 1 : Définir vos APIs
 
