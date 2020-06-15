@@ -31,6 +31,7 @@ public class SuperHeroServiceShould {
 
     @Test
     void call_the_save_and_flush_operation_when_adding_a_new_super_hero() {
+        Mockito.when(superHeroRepository.saveAndFlush(Mockito.any(SuperHero.class))).thenReturn(new SuperHero());
         this.superHeroService.createSuperHero("Batman");
 
         verify(superHeroRepository).saveAndFlush(Mockito.any(SuperHero.class));

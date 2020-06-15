@@ -22,9 +22,11 @@ public class SuperHeroService {
         this.superHeroRepository = superHeroRepository;
     }
 
-    public void createSuperHero(String name) {
+    public MatchingHero createSuperHero(String name) {
         SuperHero toBeSaved = new SuperHeroBuilder().createSuperHero(name);
-        this.superHeroRepository.saveAndFlush(toBeSaved);
+        SuperHero hero = this.superHeroRepository.saveAndFlush(toBeSaved);
+
+        return new MatchingHero(hero);
     }
 
     public List<MatchingHero> findAllTheMissions() {

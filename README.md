@@ -86,3 +86,74 @@ Tout vos services seront exposé en V1 sur `/api/v1`
 * `/missions/{uuid}/history-events`
   * `GET` : Liste l'historique des événements d'une mission
   * `POST` : Rajoute une nouvelle évènement dans l'historique d'une mission
+
+## TP 4 : Tester votre API
+
+Ha ... Théoriquement, les tests se font bien avant d'écrire le code !
+
+Pour cette fois ci, vous êtes excusé ;-) ...
+
+### Etape 1 : Rest Assured
+
+Dans votre `pom.xml`, insérer une dépendance à rest-assured.
+
+```xml
+<dependency>
+    <groupId>io.rest-assured</groupId>
+    <artifactId>rest-assured</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Et écrivez vos tests en suivant la documentation de [Rest Assured](http://rest-assured.io/)
+
+Voici un petit exemple de test :
+
+```java
+@DisplayName("GET /super-heroes")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class GetSuperHeroesTests {
+
+    @LocalServerPort
+    private int port;
+    
+    private RequestSpecification given() {
+        return RestAssured.given()
+                .port(port)
+                .basePath("/api/v1/super-heroes/");
+    }
+
+    @Test
+    @DisplayName("Should return the list of super heroes")
+    void shouldReturnTheListOfSuperHeroes() {
+        // GIVEN
+        final RequestSpecification requestSpecification = given();
+
+        // WHEN
+        final Response response = requestSpecification.get("");
+
+        // THEN
+        response.then()
+                .statusCode(200)
+                .header(HttpHeaders.CONTENT_TYPE, Matchers.startsWith(MediaType.APPLICATION_JSON))
+                .body("name", Matchers.hasItems("Mystique", "The Punisher", "Elektra"));
+    }
+
+}
+```
+
+De temps en temps, n'hésitez pas à factoriser vos tests unitaires afin de les rendres plus lisibles !
+
+### (Faculatif) Etape 2 : Générer une documentation à travers les tests avec Spring Rest Docs
+
+Il est possible grâce à Rest-Assured & Spring de générer une documentation.
+
+```xml
+<dependency>
+    <groupId>org.springframework.restdocs</groupId>
+    <artifactId>spring-restdocs-mockmvc</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+Pour plus d'information, vous pouvez utiliser la documentation de [Spring RestDocs](https://docs.spring.io/spring-restdocs/docs/current/reference/html5/)

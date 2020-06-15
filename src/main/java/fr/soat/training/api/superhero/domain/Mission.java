@@ -60,4 +60,8 @@ public class Mission implements Serializable {
     public LocalDate getCreateAt() {
         return this.createdAt.toLocalDate();
     }
+
+    public void setMissionId(UUID missionId) {
+        this.uuid = missionId;
+    }
 }

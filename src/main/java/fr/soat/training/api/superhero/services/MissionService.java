@@ -37,11 +37,14 @@ public class MissionService {
                 .collect(Collectors.toList());
     }
 
-    public void createAMissionFor(String superHeroName, String missionTitle) {
+    public MatchingMission createAMissionFor(String superHeroName, String missionTitle) {
         MatchingHero matchingHero = this.superHeroService.getTheSuperHeroMatching(superHeroName);
-        Mission theMission = new MissionBuilder().createMission(missionTitle).assignedTo(matchingHero.getName()).build();
+        Mission theMission = new MissionBuilder().createMission(missionTitle).assignedTo(matchingHero.getName())
+                .build();
 
-        this.missionRepository.saveAndFlush(theMission);
+        Mission mission = this.missionRepository.saveAndFlush(theMission);
+
+        return new MatchingMission(mission);
     }
 
     public MatchingMission getMission(UUID missionUUID) {

@@ -4,6 +4,8 @@ import fr.soat.training.api.superhero.domain.Mission;
 import fr.soat.training.api.superhero.domain.SuperHero;
 import fr.soat.training.api.superhero.services.domain.MatchingHero;
 
+import java.util.UUID;
+
 public class MissionBuilder {
     private Mission mission;
 
@@ -42,4 +44,11 @@ public class MissionBuilder {
         return this.mission;
     }
 
+    public MissionBuilder withUUID(UUID missionId) {
+        if (this.mission == null) {
+            throw new IllegalArgumentException("the mission is mandataroy");
+        }
+        this.mission.setMissionId(missionId);
+        return this;
+    }
 }
