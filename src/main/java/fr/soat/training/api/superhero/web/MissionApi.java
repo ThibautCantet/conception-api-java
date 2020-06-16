@@ -26,13 +26,13 @@ public class MissionApi {
     @Autowired
     private HistoricEventService historicEventService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<?> getMissions() {
         List<MatchingMission> allTheMissions = this.missionService.getAllTheMissions();
         return ResponseEntity.ok().body(allTheMissions);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<?> createNewMission(@RequestBody CreateMissionRequest request){
         MatchingMission newMission = this.missionService.createAMissionFor(request.getAssignedHero(), request.getTitle());
 
@@ -43,15 +43,13 @@ public class MissionApi {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping(value = "{uuid}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{uuid}")
     public ResponseEntity<?> getMission(@PathVariable String uuid){
         MatchingMission mission = this.missionService.getMission(UUID.fromString(uuid));
         return ResponseEntity.ok(mission);
     }
 
-    @GetMapping(value = "{uuid}/history-events",
-            produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{uuid}/history-events")
     public ResponseEntity<?> getMissionEvents(@PathVariable String uuid){
         List<MatchingHistoricEvent> matchingHistoricEvents = historicEventService.retrieveAllEventsOfAMission(UUID.fromString(uuid));
         if (matchingHistoricEvents.isEmpty()){
@@ -60,9 +58,7 @@ public class MissionApi {
         return ResponseEntity.ok(matchingHistoricEvents);
     }
 
-    @PostMapping(value = "{uuid}/history-events",
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "{uuid}/history-events")
     public ResponseEntity<?> createANewEvent(@PathVariable String uuid, @RequestBody final CreateHistoryEventRequest request){
 
         this.historicEventService.createNewEventOnMission(UUID.fromString(uuid), request.getDescription());

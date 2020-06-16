@@ -20,7 +20,7 @@ public class SuperHeroApi {
     @Autowired
     private SuperHeroService superHeroService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<?> getAllTheSuperHeroes(){
         List<MatchingHero> allTheMissions = this.superHeroService.findAllTheMissions();
         if(allTheMissions.isEmpty()){
@@ -29,14 +29,14 @@ public class SuperHeroApi {
         return ResponseEntity.ok(allTheMissions);
     }
 
-    @GetMapping(value = "{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{uuid}")
     public ResponseEntity<?> getSuperHero(@PathVariable String uuid) {
         MatchingHero superHero = this.superHeroService.getSuperHero(UUID.fromString(uuid));
 
         return ResponseEntity.ok(superHero);
     }
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping()
     public ResponseEntity<?> createSuperHero(@RequestBody CreateSuperHeroRequest request){
         MatchingHero newHero = this.superHeroService.createSuperHero(request.getName());
 
