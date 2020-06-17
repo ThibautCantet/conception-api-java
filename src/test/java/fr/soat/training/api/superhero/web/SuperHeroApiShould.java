@@ -10,17 +10,24 @@ import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import fr.soat.training.api.superhero.services.SuperHeroService;
 import fr.soat.training.api.superhero.services.domain.MatchingHero;
 import fr.soat.training.api.superhero.web.requests.CreateSuperHeroRequest;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.*;
 
 public class SuperHeroApiShould extends APIsBaseComponentTest {
@@ -86,20 +93,49 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
     }
 
     @Test
-    void respond_with_a_200_the_super_as_body_when_a_hero_matches_the_given_uuid() {
+    void respond_with_a_200_status_when_a_hero_matches_the_given_uuid() {
         UUID fakeHeroId = UUID.randomUUID();
         MatchingHero hero = new MatchingHero("API hero", fakeHeroId);
-
+        GetSuperHeroById getHeroWithoutIDRequest = new GetSuperHeroById(fakeHeroId.toString());
         Mockito.when(superHeroService.getSuperHero(fakeHeroId)).thenReturn(hero);
+
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .get(ALL_SUPER_HEROES + fakeHeroId.toString())
+                .get(ALL_SUPER_HEROES + getHeroWithoutIDRequest.getUuid())
                 .then()
+                .log().ifValidationFails()
                 .statusCode(OK.value())
                 .and()
                 .body("name", equalTo(hero.getName()));
 
         verify(superHeroService).getSuperHero(fakeHeroId);
+    }
+
+    @Test
+    void respond_with_a_400_status_when_the_hero_to_name_has_empty_name() {
+        CreateSuperHeroRequest heroWithoutNameRequest = new CreateSuperHeroRequest("");
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(heroWithoutNameRequest)
+                .when()
+                .post(ALL_SUPER_HEROES)
+                .then()
+                .assertThat()
+                .statusCode(BAD_REQUEST.value());
+    }
+
+    @Test
+    void respond_with_a_400_status_when_the_uuid_given_to_find_an_hero_is_empty() {
+        GetSuperHeroById request = new GetSuperHeroById("");
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(ALL_SUPER_HEROES + request)
+                .then()
+                .log().ifValidationFails()
+                .assertThat()
+                .statusCode(BAD_REQUEST.value());
     }
 }

@@ -116,7 +116,6 @@ class MissionApiShould extends APIsBaseComponentTest{
         verify(historicEventService).retrieveAllEventsOfAMission(fakeMissionId);
     }
 
-
     @Test
     void respond_with_200_OK_and_the_matching_events_as_body_when_there_are_events_for_a_mission() {
         UUID fakeMissionId = UUID.randomUUID();

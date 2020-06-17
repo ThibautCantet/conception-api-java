@@ -1,4 +1,6 @@
 package fr.soat.training.api.superhero.web.requests;
 
-public record CreateSuperHeroRequest(String name) {
+import javax.validation.constraints.NotEmpty;
+
+public record CreateSuperHeroRequest(@NotEmpty String name) {
 }

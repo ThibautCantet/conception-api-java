@@ -2,11 +2,16 @@ package fr.soat.training.api.superhero.services.domain;
 
 import fr.soat.training.api.superhero.domain.SuperHero;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 public class MatchingHero {
+
+    @NotEmpty
+    @NotNull
     private String name;
     private UUID uuid;
     private LocalDateTime createdSince;
