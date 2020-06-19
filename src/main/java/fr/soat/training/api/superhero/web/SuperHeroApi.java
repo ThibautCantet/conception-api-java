@@ -9,17 +9,15 @@ import javax.validation.Valid;
 import fr.soat.training.api.superhero.services.SuperHeroService;
 import fr.soat.training.api.superhero.services.domain.MatchingHero;
 import fr.soat.training.api.superhero.web.requests.CreateSuperHeroRequest;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/v1/super-heroes/")
@@ -49,7 +47,7 @@ public class SuperHeroApi {
 
     @PostMapping()
     public ResponseEntity<URI> createSuperHero(@RequestBody @Valid CreateSuperHeroRequest request) {
-        if (this.superHeroService.isSuperHeroAlreadyExist(request.getName())){
+        if (this.superHeroService.exists(request.name())){
             return ResponseEntity.badRequest().build();
         }
         MatchingHero newHero = this.superHeroService.createSuperHero(request.name());

@@ -11,6 +11,7 @@ import fr.soat.training.api.superhero.domain.builders.HistoricEventBuilder;
 import fr.soat.training.api.superhero.domain.builders.MissionBuilder;
 import fr.soat.training.api.superhero.services.HistoricEventService;
 import fr.soat.training.api.superhero.services.MissionService;
+import fr.soat.training.api.superhero.services.SuperHeroService;
 import fr.soat.training.api.superhero.services.domain.MatchingHistoricEvent;
 import fr.soat.training.api.superhero.services.domain.MatchingMission;
 import fr.soat.training.api.superhero.web.requests.CreateHistoryEventRequest;
@@ -18,6 +19,7 @@ import fr.soat.training.api.superhero.web.requests.CreateMissionRequest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +28,10 @@ import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.OK;
 
 class MissionApiShould extends APIsBaseComponentTest{
     private static final String ALL_MISSIONS = "missions/";
@@ -38,6 +41,9 @@ class MissionApiShould extends APIsBaseComponentTest{
 
     @MockBean
     private HistoricEventService historicEventService;
+
+    @MockBean
+    private SuperHeroService superHeroService;
 
     @Test
     void respond_with_200_OK_when_getting_all_the_missions_is_a_success() {
@@ -60,13 +66,13 @@ class MissionApiShould extends APIsBaseComponentTest{
     }
 
     @Test
-    void respond_with_201_and_the_missionId_in_headers_as_location_when_the_creation_is_a_success() {
+    void respond_with_201_and_the_missionId_in_location_when_the_created_a_mission_with_a_known_super_hero() {
         CreateMissionRequest request = missionRequest("Save the world !", "Batman");
         UUID fakeMissionId = UUID.randomUUID();
         MatchingMission savedMission = new MatchingMission("Save the world Batman !!", "Batman", fakeMissionId);
 
-        when(missionService.createAMissionFor(Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(savedMission);
+        when(this.superHeroService.exists("Batman")).thenReturn(true);
+        when(missionService.createAMissionFor(anyString(), anyString())).thenReturn(savedMission);
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -105,6 +111,7 @@ class MissionApiShould extends APIsBaseComponentTest{
     void respond_with_204_when_there_no_events_given_a_mission() {
         UUID fakeMissionId = UUID.randomUUID();
         when(historicEventService.retrieveAllEventsOfAMission(fakeMissionId)).thenReturn(Collections.emptyList());
+        when(missionService.missionExists(fakeMissionId.toString())).thenReturn(true);
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -114,6 +121,22 @@ class MissionApiShould extends APIsBaseComponentTest{
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
         verify(historicEventService).retrieveAllEventsOfAMission(fakeMissionId);
+    }
+
+    @Test
+    void respond_with_404_status_when_the_mission_for_the_event_to_create_does_not_exists() {
+        String unknownMissionId = "111123";
+        Mockito.when(missionService.missionExists(unknownMissionId)).thenReturn(false);
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(ALL_MISSIONS + unknownMissionId + "/history-events")
+                .then()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+
+        verify(missionService).missionExists(unknownMissionId);
+        verify(historicEventService, never()).retrieveAllEventsOfAMission(any(UUID.class));
     }
 
     @Test
@@ -127,6 +150,7 @@ class MissionApiShould extends APIsBaseComponentTest{
         List<MatchingHistoricEvent> historicEvents = Arrays.asList(firstEvent, secondEvent).stream().map(he -> new MatchingHistoricEvent(he))
                 .toList();
 
+        Mockito.when(missionService.missionExists(fakeMissionId.toString())).thenReturn(true);
         when(historicEventService.retrieveAllEventsOfAMission(fakeMissionId)).thenReturn(historicEvents);
 
         this.given()
@@ -157,7 +181,52 @@ class MissionApiShould extends APIsBaseComponentTest{
                 .header(HttpHeaders.LOCATION, endsWith("/api/v1/missions/" + fakeMissionId.toString() + "/history-events") );
 
         verify(historicEventService).createNewEventOnMission(fakeMissionId, event.description());
+    }
 
+    @Test
+    void should_return_an_error_when_creating_a_new_mission_without_a_title() {
+        CreateMissionRequest request = missionRequest("", "Batman");
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(ALL_MISSIONS)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void should_return_a_bad_request_status_when_creating_a_new_mission_without_the_name_of_the_assigned_hero() {
+        CreateMissionRequest request = missionRequest("Saving the world!", "");
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(ALL_MISSIONS)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
+    void return_a_not_found_status_when_creating_a_mission_for_hero_that_does_not_exist() {
+        CreateMissionRequest request = missionRequest("Saving the world!", "unknown");
+        when(superHeroService.exists(anyString())).thenReturn(false);
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(request)
+                .when()
+                .post(ALL_MISSIONS)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+
+        verify(superHeroService).exists("unknown");
+        verify(missionService, never()).createAMissionFor(request.assignedHero(), request.title());
     }
 
     private static CreateMissionRequest missionRequest(final String title, final String hero) {
@@ -167,4 +236,6 @@ class MissionApiShould extends APIsBaseComponentTest{
     private static CreateHistoryEventRequest eventRequest(final String description) {
         return new CreateHistoryEventRequest(description);
     }
+
+
 }

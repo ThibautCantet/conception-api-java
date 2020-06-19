@@ -50,4 +50,8 @@ public class MissionService {
     public Mission getMission(UUID missionUUID) {
         return this.missionRepository.findById(missionUUID).orElse(null);
     }
+
+    public boolean missionExists(String missionId) {
+        return this.missionRepository.findById(UUID.fromString(missionId)).isPresent();
+    }
 }

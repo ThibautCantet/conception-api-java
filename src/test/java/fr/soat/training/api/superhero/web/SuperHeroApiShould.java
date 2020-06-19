@@ -119,7 +119,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
 
     @Test
     void respons_with_a_400_status_when_the_hero_to_create_already_exist() {
-        when(this.superHeroService.isSuperHeroAlreadyExist(anyString())).thenReturn(true);
+        when(this.superHeroService.exists(anyString())).thenReturn(true);
         CreateSuperHeroRequest newHero = new CreateSuperHeroRequest("Api hero");
 
         this.given()
@@ -131,6 +131,6 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
                 .assertThat()
                 .statusCode(BAD_REQUEST.value());
 
-        verify(superHeroService, never()).createSuperHero(newHero.getName());
+        verify(superHeroService, never()).createSuperHero(newHero.name());
     }
 }

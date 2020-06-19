@@ -4,7 +4,6 @@ import fr.soat.training.api.superhero.domain.SuperHero;
 import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import fr.soat.training.api.superhero.repository.SuperHeroRepository;
 import fr.soat.training.api.superhero.services.domain.MatchingHero;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,7 +97,7 @@ public class SuperHeroServiceShould {
     @Test
     void call_the_findByName_operation_to_verify_if_a_super_hero_exist() {
         String superHeroName = "Batman";
-        this.superHeroService.isSuperHeroAlreadyExist(superHeroName);
+        this.superHeroService.exists(superHeroName);
 
         verify(this.superHeroRepository).findByName(superHeroName);
     }
@@ -107,7 +106,7 @@ public class SuperHeroServiceShould {
     void return_false_when_no_super_hero_with_the_name_exist() {
         when(this.superHeroRepository.findByName(anyString())).thenReturn(Optional.ofNullable(null));
 
-        boolean heroExist = this.superHeroService.isSuperHeroAlreadyExist("");
+        boolean heroExist = this.superHeroService.exists("");
 
         assertThat(heroExist).isFalse();
     }
@@ -117,7 +116,7 @@ public class SuperHeroServiceShould {
         SuperHero wolverine = new SuperHeroBuilder().createSuperHero("Wolverine");
         when(this.superHeroRepository.findByName(anyString())).thenReturn(Optional.of(wolverine ));
 
-        boolean heroExist = this.superHeroService.isSuperHeroAlreadyExist("Wolverine");
+        boolean heroExist = this.superHeroService.exists("Wolverine");
 
         assertThat(heroExist).isTrue();
     }

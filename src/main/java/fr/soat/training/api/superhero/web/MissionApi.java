@@ -3,13 +3,16 @@ package fr.soat.training.api.superhero.web;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.Valid;
 
 import fr.soat.training.api.superhero.services.HistoricEventService;
 import fr.soat.training.api.superhero.services.MissionService;
+import fr.soat.training.api.superhero.services.SuperHeroService;
 import fr.soat.training.api.superhero.services.domain.MatchingHistoricEvent;
 import fr.soat.training.api.superhero.services.domain.MatchingMission;
 import fr.soat.training.api.superhero.web.requests.CreateHistoryEventRequest;
 import fr.soat.training.api.superhero.web.requests.CreateMissionRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,10 +28,12 @@ public class MissionApi {
 
     private final MissionService missionService;
     private final HistoricEventService historicEventService;
+    private final SuperHeroService superHeroService;
 
-    public MissionApi(MissionService missionService, HistoricEventService historicEventService) {
+    public MissionApi(MissionService missionService, HistoricEventService historicEventService, SuperHeroService superHeroService) {
         this.missionService = missionService;
         this.historicEventService = historicEventService;
+        this.superHeroService = superHeroService;
     }
 
     @GetMapping()
@@ -38,7 +43,10 @@ public class MissionApi {
     }
 
     @PostMapping()
-    public ResponseEntity<String> createNewMission(@RequestBody CreateMissionRequest request){
+    public ResponseEntity<String> createNewMission(@RequestBody @Valid CreateMissionRequest request){
+        if (!this.superHeroService.exists(request.assignedHero())){
+            return new ResponseEntity<>(request.assignedHero(), HttpStatus.NOT_FOUND);
+        }
         MatchingMission newMission = this.missionService.createAMissionFor(request.assignedHero(), request.title());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -56,6 +64,9 @@ public class MissionApi {
 
     @GetMapping(value = "{uuid}/history-events")
     public ResponseEntity<List<MatchingHistoricEvent>> getMissionEvents(@PathVariable String uuid){
+        if( !this.missionService.missionExists(uuid)){
+            return ResponseEntity.notFound().build();
+        }
         List<MatchingHistoricEvent> matchingHistoricEvents = historicEventService.retrieveAllEventsOfAMission(UUID.fromString(uuid));
         if (matchingHistoricEvents.isEmpty()){
             return ResponseEntity.noContent().build();

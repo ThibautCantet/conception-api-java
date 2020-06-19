@@ -48,7 +48,7 @@ public class SuperHeroService {
         return found.map(MatchingHero::new).orElse(null);
     }
 
-    public boolean isSuperHeroAlreadyExist(String name) {
+    public boolean exists(String name) {
         return this.superHeroRepository.findByName(name).isPresent();
     }
 }
