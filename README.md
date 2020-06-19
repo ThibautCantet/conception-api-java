@@ -129,10 +129,10 @@ Penser bien à annoter vos classes & vos méthodes des annotations suivantes :
 
 * `@GetMapping`
 * `@PostMapping`
-* Et surtout ... `@RestController` et `@RequestMapping`  du package `org.springframework.web.bind.annotation.*`;
+* Et surtout ... `@RestController` du package `org.springframework.web.bind.annotation.*` au dessus de la classe;
  
    
-### Etape 4: Test driven everything ! ( Je vous accopagne)
+### Etape 4: Test driven everything ! ( Je vous accompagne)
     
 Voici un petit exemple de test qui vérifie vérifie qu'une API renvoie HTTP 200 lorsque l'adresse `/api/v1//super-heroes/` est implémentée.
 ```java
@@ -197,6 +197,81 @@ L'astérisque ici est pour les besoins de la formation.
 
 - [x] Curieux du reste ? Voir la [documentation officielle](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-enabling) de Spring boot.
 
+## TP3 - Validation des données et gestion des erreurs fonctionnelles 
+Ici, il s'agit de d'appliquer le conseil de "Ne jamais faire confiance à un utilisateur".
+Ainsi, on veut pouvoir vérifier : 
 
+ `Lors de la création d'un super héro :`  
+ - [x] Le nom du super hero doit être renseigné
 
+ `Lors de la création d'une mission :`  
+- [x] Le nom de la mission doit être renseigné
+- [x] le nom du super héro assigné à une mission doit être renseigné
+- [x] Le super héro référencé pour une mission  doit exister 
+- [x] Si le héro et la mission à créer existent déjà, ne rien faire.
+
+`Lors la récupération de tous les événements historiques liée à une mission :`  
+- [x] La mission doit exister
+
+`Lors la création d'un événement historique liée à une mission :` 
+- [x] La mission doit exister
+- [x] La description de l'événement doit être renseignée
+
+### Validation des données utilisateur 
+- Ajouter l'implémentation officielle de  JSR 380 au projet : 
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+- Trouvez les valeurs à valider et ajoutez les contraintes grâce aux annotations appropriées de la JSR 380
+S'inspirer de l'exemple de la [documentation officielle](https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-gettingstarted-createmodel)
+
+- Dans les API, annotez les endpoints cibles avec la contrainte `@Valid` comme dans l'exemple ci-dessous: 
+```java
+import org.springframework.web.bind.annotation.PostMapping;
+public ResponseEntity<?> create(@Valid @RequestBody final CreateRequest request){}
+```
+## TP 4 : documentation 
+
+Il est possible de générer automatiquement une documentation respectant la spec OpenApi 3.
+Le voir en action, ajouter la dépendance `springdoc-openapi-ui`:
+```xml
+<dependency>
+    <groupId>org.springdoc</groupId>
+    <artifactId>springdoc-openapi-ui</artifactId>
+    <version>1.2.32</version>
+</dependency>
+``` 
+Rien que l'ajout de cette dépendance, aidée des annotations sur nos API et des contraintes de validation de beans, nous permet 
+d'avoir une documentation respectant spec OpenAPI 3. Cette dernière est accessible par défaut sur : 
+`http://localhost:8080/v3/api-docs/` 
+
+- [x] La documentation par défaut est au format YAML.
+
+Vous préférez du swagger-ui ? Pas de problème, allez sur le  
+`http://localhost:8080/swagger-ui.html`
+
+## Exerice : Modifier le chemin de la documentation 
+
+Modifier le chemin de génération de la documentation afin que les deux versions soient disponibles comme suit:
+- Yaml : `http://localhost:8080/api/v1/docs`
+- Swagger-ui :  `http://localhost:8080/api/v1/docs/swagger-ui.html`
+
+Pour y arriver, allez dans le fichier application.yaml et ajoutez la configuration ci-dessous:
+
+- OpenAPI 3.0
+```yaml
+springdoc:
+  api-docs:
+    path: /api/v1/docs
+```
+
+- Swagger
  
+```yaml
+springdoc:
+  swagger-ui:
+    path: api/v1/docs/swagger-ui.html
+```

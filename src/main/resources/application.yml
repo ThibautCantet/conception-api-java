@@ -25,3 +25,11 @@ logging.level:
   io.swagger: info
 
 management.endpoints.web.exposure.include: ['health', 'info' ]
+
+#Documentation :
+springdoc:
+  api-docs:
+    path: /api/v1/docs
+  swagger-ui:
+    path: /api/v1/docs/swagger-ui.html
+
