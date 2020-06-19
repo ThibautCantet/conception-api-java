@@ -27,6 +27,7 @@ public class SuperHeroService {
         return new MatchingHero(hero);
     }
 
+
     public List<MatchingHero> findAllTheMissions() {
         List<SuperHero> missions = this.superHeroRepository.findAll();
         return missions.stream().map(MatchingHero::new).toList();
@@ -45,5 +46,9 @@ public class SuperHeroService {
     public MatchingHero getSuperHero(UUID heroId) {
         Optional<SuperHero> found = this.superHeroRepository.findById(heroId);
         return found.map(MatchingHero::new).orElse(null);
+    }
+
+    public boolean isSuperHeroAlreadyExist(String name) {
+        return this.superHeroRepository.findByName(name).isPresent();
     }
 }

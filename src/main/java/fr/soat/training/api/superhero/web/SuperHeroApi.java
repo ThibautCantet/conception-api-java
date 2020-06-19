@@ -23,7 +23,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping(path = "/api/v1/super-heroes/")
-@Validated
 public class SuperHeroApi {
 
     private final SuperHeroService superHeroService;
@@ -42,25 +41,22 @@ public class SuperHeroApi {
     }
 
     @GetMapping(value = "{uuid}")
-    public ResponseEntity<MatchingHero> getSuperHero(@Valid GetSuperHeroById request) {
-        MatchingHero superHero = this.superHeroService.getSuperHero(UUID.fromString(request.getUuid()));
+    public ResponseEntity<MatchingHero> getSuperHero(@PathVariable("uuid") String uuid) {
+        MatchingHero superHero = this.superHeroService.getSuperHero(UUID.fromString(uuid));
 
         return ResponseEntity.ok(superHero);
     }
 
     @PostMapping()
     public ResponseEntity<URI> createSuperHero(@RequestBody @Valid CreateSuperHeroRequest request) {
+        if (this.superHeroService.isSuperHeroAlreadyExist(request.getName())){
+            return ResponseEntity.badRequest().build();
+        }
         MatchingHero newHero = this.superHeroService.createSuperHero(request.name());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(newHero.getUuid()).toUri();
 
         return ResponseEntity.created(location).build();
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
-        return new ResponseEntity<>("invalid due to " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

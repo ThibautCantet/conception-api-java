@@ -14,7 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class SuperHeroServiceShould {
@@ -31,10 +35,10 @@ public class SuperHeroServiceShould {
 
     @Test
     void call_the_save_and_flush_operation_when_adding_a_new_super_hero() {
-        Mockito.when(superHeroRepository.saveAndFlush(Mockito.any(SuperHero.class))).thenReturn(new SuperHero());
+        when(superHeroRepository.saveAndFlush(any(SuperHero.class))).thenReturn(new SuperHero());
         this.superHeroService.createSuperHero("Batman");
 
-        verify(superHeroRepository).saveAndFlush(Mockito.any(SuperHero.class));
+        verify(superHeroRepository).saveAndFlush(any(SuperHero.class));
     }
 
     @Test
@@ -48,10 +52,10 @@ public class SuperHeroServiceShould {
         SuperHero batman = new SuperHeroBuilder().createSuperHero("Batman");
         SuperHero malicia = new SuperHeroBuilder().createSuperHero("Malicia");
 
-        Mockito.when(superHeroRepository.findAll()).thenReturn(Collections.unmodifiableList(Arrays.asList(batman, malicia)));
+        when(superHeroRepository.findAll()).thenReturn(Collections.unmodifiableList(Arrays.asList(batman, malicia)));
 
         List<MatchingHero> missions = this.superHeroService.findAllTheMissions();
-        Assertions.assertThat(missions)
+        assertThat(missions)
                 .as("Should not return the entities ")
                 .hasSize(2)
                 .hasOnlyElementsOfType(MatchingHero.class);
@@ -60,7 +64,7 @@ public class SuperHeroServiceShould {
     @Test
     void call_the_findByName_operation_to_find_a_superhero_given_a_name() {
         SuperHero wolverine = new SuperHeroBuilder().createSuperHero("Wolverine");
-        Mockito.when(this.superHeroRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(wolverine));
+        when(this.superHeroRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(wolverine));
 
         this.superHeroService.getTheSuperHeroMatching("Wolverine");
 
@@ -70,11 +74,11 @@ public class SuperHeroServiceShould {
     @Test
     void return_an_instance_of_superHeroResponse_when_a_supero_is_was_found_by_its_name() {
         SuperHero wolverine = new SuperHeroBuilder().createSuperHero("Wolverine");
-        Mockito.when(this.superHeroRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(wolverine));
+        when(this.superHeroRepository.findByName(Mockito.anyString())).thenReturn(Optional.of(wolverine));
 
         MatchingHero found = this.superHeroService.getTheSuperHeroMatching("Wolverine");
 
-        Assertions.assertThat(found)
+        assertThat(found)
                 .as("Should not be the entity")
                 .isInstanceOf(MatchingHero.class);
 
@@ -83,11 +87,38 @@ public class SuperHeroServiceShould {
     @Test
     void call_the_findById_operation_to_find_a_superhero_given_its_uuid() {
         SuperHero wolverine = new SuperHeroBuilder().createSuperHero("Wolverine");
-        Mockito.when(this.superHeroRepository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(wolverine));
+        when(this.superHeroRepository.findById(any(UUID.class))).thenReturn(Optional.of(wolverine));
 
         UUID heroId = UUID.randomUUID();
         this.superHeroService.getSuperHero(heroId);
 
         verify(this.superHeroRepository).findById(heroId);
+    }
+
+    @Test
+    void call_the_findByName_operation_to_verify_if_a_super_hero_exist() {
+        String superHeroName = "Batman";
+        this.superHeroService.isSuperHeroAlreadyExist(superHeroName);
+
+        verify(this.superHeroRepository).findByName(superHeroName);
+    }
+
+    @Test
+    void return_false_when_no_super_hero_with_the_name_exist() {
+        when(this.superHeroRepository.findByName(anyString())).thenReturn(Optional.ofNullable(null));
+
+        boolean heroExist = this.superHeroService.isSuperHeroAlreadyExist("");
+
+        assertThat(heroExist).isFalse();
+    }
+
+    @Test
+    void return_true_when_no_super_hero_with_the_name_exist() {
+        SuperHero wolverine = new SuperHeroBuilder().createSuperHero("Wolverine");
+        when(this.superHeroRepository.findByName(anyString())).thenReturn(Optional.of(wolverine ));
+
+        boolean heroExist = this.superHeroService.isSuperHeroAlreadyExist("Wolverine");
+
+        assertThat(heroExist).isTrue();
     }
 }

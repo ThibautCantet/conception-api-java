@@ -10,24 +10,16 @@ import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import fr.soat.training.api.superhero.services.SuperHeroService;
 import fr.soat.training.api.superhero.services.domain.MatchingHero;
 import fr.soat.training.api.superhero.web.requests.CreateSuperHeroRequest;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.*;
 
 public class SuperHeroApiShould extends APIsBaseComponentTest {
@@ -44,7 +36,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
         List<MatchingHero> heroesFound = Arrays.asList(batman, malicia).stream().map(sh -> new MatchingHero(sh))
                 .toList();
 
-        Mockito.when(superHeroService.findAllTheMissions()).thenReturn(heroesFound);
+        when(superHeroService.findAllTheMissions()).thenReturn(heroesFound);
 
         this.given()
                 .when()
@@ -60,7 +52,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
 
     @Test
     void respond_with_a_204_status_when_getting_all_the_super_heroes_returns_nothing() {
-        Mockito.when(superHeroService.findAllTheMissions()).thenReturn(Collections.emptyList());
+        when(superHeroService.findAllTheMissions()).thenReturn(Collections.emptyList());
 
         this.given()
                 .when()
@@ -76,7 +68,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
         CreateSuperHeroRequest newHero = new CreateSuperHeroRequest("Api hero");
         UUID fakeHeroId = UUID.randomUUID();
         MatchingHero hero = new MatchingHero("Api hero", fakeHeroId);
-        Mockito.when(superHeroService.createSuperHero(anyString())).thenReturn(hero);
+        when(superHeroService.createSuperHero(anyString())).thenReturn(hero);
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -97,7 +89,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
         UUID fakeHeroId = UUID.randomUUID();
         MatchingHero hero = new MatchingHero("API hero", fakeHeroId);
         GetSuperHeroById getHeroWithoutIDRequest = new GetSuperHeroById(fakeHeroId.toString());
-        Mockito.when(superHeroService.getSuperHero(fakeHeroId)).thenReturn(hero);
+        when(superHeroService.getSuperHero(fakeHeroId)).thenReturn(hero);
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -126,16 +118,19 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
     }
 
     @Test
-    void respond_with_a_400_status_when_the_uuid_given_to_find_an_hero_is_empty() {
-        GetSuperHeroById request = new GetSuperHeroById("");
+    void respons_with_a_400_status_when_the_hero_to_create_already_exist() {
+        when(this.superHeroService.isSuperHeroAlreadyExist(anyString())).thenReturn(true);
+        CreateSuperHeroRequest newHero = new CreateSuperHeroRequest("Api hero");
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(newHero)
                 .when()
-                .get(ALL_SUPER_HEROES + request)
+                .post(ALL_SUPER_HEROES)
                 .then()
-                .log().ifValidationFails()
                 .assertThat()
                 .statusCode(BAD_REQUEST.value());
+
+        verify(superHeroService, never()).createSuperHero(newHero.getName());
     }
 }
