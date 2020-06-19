@@ -197,43 +197,6 @@ L'astérisque ici est pour les besoins de la formation.
 
 - [x] Curieux du reste ? Voir la [documentation officielle](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production-ready-enabling) de Spring boot.
 
-#TP3 - Validation des données et gestion des erreurs fonctionnelles 
-Ici, il s'agit de d'appliquer le conseil de "Ne jamais faire confiance à un utilisateur".
-Ainsi, on veut pouvoir vérifier : 
-
- `Lors de la création d'un super héro :`  
- - [x] Le nom du super hero doit être renseigné
-
- `Lors de la création d'une mission :`  
-- [x] Le nom de la mission doit être renseigné
-- [x] le nom du super héro assigné à une mission doit être renseigné
-- [x] Le super héro référencé pour une mission  doit exister 
-- [x] Si le héro et la mission à créer existent déjà, ne rien faire.
-
-`Lors la récupération de tous les événements historiques liée à une mission :`  
-- [x] La mission doit exister
-
-`Lors la création d'un événement historique liée à une mission :` 
-- [x] La mission doit exister
-- [x] La description de l'événement doit être renseignée
-
-## Validation des données utilisateur 
-- Ajouter l'implémentation officielle de  JSR 380 au projet : 
-```xml
-<dependency>
-    <groupId>org.hibernate.validator</groupId>
-    <artifactId>hibernate-validator</artifactId>
-    <version>6.1.1.Final</version>
-</dependency>
-```
-- Trouvez les valeurs à valider et ajoutez les contraintes grâce aux annotations appropriées de la JSR 380
-S'inspirer de l'exemple de la [documentation officielle](https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-gettingstarted-createmodel)
-
-- Dans les API, annotez les endpoints cibles avec la contrainte `@Valid` comme dans l'exemple ci-dessous: 
-```java
-import org.springframework.web.bind.annotation.PostMapping;
-public ResponseEntity<?> create(@Valid @RequestBody final CreateRequest request){}
-```
 
 
  
