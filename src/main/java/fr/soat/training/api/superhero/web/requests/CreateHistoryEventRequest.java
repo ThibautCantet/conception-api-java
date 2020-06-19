@@ -1,4 +1,6 @@
 package fr.soat.training.api.superhero.web.requests;
 
-public record CreateHistoryEventRequest(String description) {
+import javax.validation.constraints.NotBlank;
+
+public record CreateHistoryEventRequest(@NotBlank String description) {
 }

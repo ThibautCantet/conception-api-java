@@ -168,7 +168,7 @@ class MissionApiShould extends APIsBaseComponentTest{
     void respond_with_201_Status_and_all_the_events_URL_as_location_when_the_creation_of_an_historic_event_succeeds() {
         UUID fakeMissionId = UUID.randomUUID();
         CreateHistoryEventRequest event = eventRequest("jump in the batMobile");
-
+        Mockito.when(this.missionService.missionExists(fakeMissionId.toString())).thenReturn(true);
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(event)
@@ -181,6 +181,42 @@ class MissionApiShould extends APIsBaseComponentTest{
                 .header(HttpHeaders.LOCATION, endsWith("/api/v1/missions/" + fakeMissionId.toString() + "/history-events") );
 
         verify(historicEventService).createNewEventOnMission(fakeMissionId, event.description());
+    }
+
+    @Test
+    void respond_with_400_badRequest_when_the_description_of_the_historic_event_is_blank() {
+        UUID fakeMissionId = UUID.randomUUID();
+        CreateHistoryEventRequest event = eventRequest("");
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(event)
+                .when()
+                .post(ALL_MISSIONS + fakeMissionId.toString() + "/history-events")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value());
+
+        verify(historicEventService, never()).createNewEventOnMission(fakeMissionId, event.description());
+    }
+
+    @Test
+    void respond_with_404_notFound_when_the_mission_is_unknown() {
+        String unknownMissionId = "193394";
+        CreateHistoryEventRequest event = eventRequest("Takes off her gloves");
+        Mockito.when(missionService.missionExists(unknownMissionId)).thenReturn(false);
+
+        this.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(event)
+                .when()
+                .post(ALL_MISSIONS + unknownMissionId.toString() + "/history-events")
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value());
+
+      verify(missionService).missionExists(unknownMissionId);
+      verify(historicEventService, never()).createNewEventOnMission(Mockito.any(UUID.class), anyString());
     }
 
     @Test

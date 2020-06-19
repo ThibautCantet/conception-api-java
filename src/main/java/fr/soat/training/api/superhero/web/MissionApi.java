@@ -75,12 +75,14 @@ public class MissionApi {
     }
 
     @PostMapping(value = "{uuid}/history-events")
-    public ResponseEntity<URI> createANewEvent(@PathVariable String uuid, @RequestBody final CreateHistoryEventRequest request){
+    public ResponseEntity<URI> createANewEvent(@PathVariable String uuid, @Valid @RequestBody final CreateHistoryEventRequest request){
+        if(!this.missionService.missionExists(uuid)){
+            return ResponseEntity.notFound().build();
+        }
 
         this.historicEventService.createNewEventOnMission(UUID.fromString(uuid), request.description());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build().toUri();
-
         return ResponseEntity.created(location).build();
     }
 
