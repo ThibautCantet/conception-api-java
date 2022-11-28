@@ -39,7 +39,7 @@ public class MissionApi {
 
     @PostMapping()
     public ResponseEntity<String> createNewMission(@RequestBody CreateMissionRequest request){
-        MatchingMission newMission = this.missionService.createAMissionFor(request.getAssignedHero(), request.getTitle());
+        MatchingMission newMission = this.missionService.createAMissionFor(request.assignedHero(), request.title());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -66,8 +66,7 @@ public class MissionApi {
     @PostMapping(value = "{uuid}/history-events")
     public ResponseEntity<URI> createANewEvent(@PathVariable String uuid, @RequestBody final CreateHistoryEventRequest request){
 
-        this.historicEventService.createNewEventOnMission(UUID.fromString(uuid), request.getDescription());
-
+        this.historicEventService.createNewEventOnMission(UUID.fromString(uuid), request.description());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build().toUri();
 

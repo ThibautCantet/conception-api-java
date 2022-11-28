@@ -82,7 +82,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
                 .and()
                 .header(HttpHeaders.LOCATION, Matchers.endsWith("/api/v1/super-heroes/" + fakeHeroId));
 
-        verify(superHeroService).createSuperHero(newHero.getName());
+        verify(superHeroService).createSuperHero(newHero.name());
     }
 
     @Test
@@ -93,7 +93,8 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
         Mockito.when(superHeroService.getSuperHero(fakeHeroId)).thenReturn(hero);
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(ALL_SUPER_HEROES + fakeHeroId.toString())
+                .when()
+                .get(ALL_SUPER_HEROES + fakeHeroId.toString())
                 .then()
                 .statusCode(OK.value())
                 .and()

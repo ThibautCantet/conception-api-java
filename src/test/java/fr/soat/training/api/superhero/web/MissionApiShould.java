@@ -157,19 +157,15 @@ class MissionApiShould extends APIsBaseComponentTest{
                 .and()
                 .header(HttpHeaders.LOCATION, endsWith("/api/v1/missions/" + fakeMissionId.toString() + "/history-events") );
 
-        verify(historicEventService).createNewEventOnMission(fakeMissionId, event.getDescription());
+        verify(historicEventService).createNewEventOnMission(fakeMissionId, event.description());
 
     }
 
     private static CreateMissionRequest missionRequest(final String title, final String hero) {
-        final CreateMissionRequest request = new CreateMissionRequest();
-        request.setTitle(title);
-        request.setAssignedHero(hero);
-        return request;
+        return new CreateMissionRequest(title, hero);
     }
 
     private static CreateHistoryEventRequest eventRequest(final String description) {
-        final CreateHistoryEventRequest request = new CreateHistoryEventRequest(description);
-        return request;
+        return new CreateHistoryEventRequest(description);
     }
 }

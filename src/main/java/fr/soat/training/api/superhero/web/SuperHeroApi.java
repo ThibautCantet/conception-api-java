@@ -43,9 +43,8 @@ public class SuperHeroApi {
     }
 
     @PostMapping()
-    public ResponseEntity<URI> createSuperHero(@RequestBody CreateSuperHeroRequest request){
-        MatchingHero newHero = this.superHeroService.createSuperHero(request.getName());
-
+    public ResponseEntity<URI> createSuperHero(@RequestBody CreateSuperHeroRequest request) {
+        MatchingHero newHero = this.superHeroService.createSuperHero(request.name());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
                 .buildAndExpand(newHero.getUuid()).toUri();
