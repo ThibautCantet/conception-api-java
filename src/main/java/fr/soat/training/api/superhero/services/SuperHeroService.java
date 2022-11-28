@@ -1,22 +1,20 @@
 package fr.soat.training.api.superhero.services;
 
-import fr.soat.training.api.superhero.domain.SuperHero;
-import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
-import fr.soat.training.api.superhero.repository.SuperHeroRepository;
-import fr.soat.training.api.superhero.services.domain.MatchingHero;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import fr.soat.training.api.superhero.domain.SuperHero;
+import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
+import fr.soat.training.api.superhero.repository.SuperHeroRepository;
+import fr.soat.training.api.superhero.services.domain.MatchingHero;
+import org.springframework.stereotype.Service;
+
 @Service
 public class SuperHeroService {
 
-    @Autowired
-    private SuperHeroRepository superHeroRepository;
+    private final SuperHeroRepository superHeroRepository;
 
     public SuperHeroService(SuperHeroRepository superHeroRepository) {
         this.superHeroRepository = superHeroRepository;
@@ -31,17 +29,21 @@ public class SuperHeroService {
 
     public List<MatchingHero> findAllTheMissions() {
         List<SuperHero> missions = this.superHeroRepository.findAll();
-        return missions.stream().map(hero -> new MatchingHero(hero)).collect(Collectors.toList());
+        return missions.stream().map(MatchingHero::new).toList();
     }
 
     public MatchingHero getTheSuperHeroMatching(String name) {
         Optional<SuperHero> matchingSuperHero = this.superHeroRepository.findByName(name);
-        return Optional.ofNullable(matchingSuperHero).map(h -> new MatchingHero(h.get()))
+        return matchingSuperHero.map(MatchingHero::new)
                 .orElse(null);
+    }
+
+    public SuperHero getTheSuperHero(String name) {
+        return this.superHeroRepository.findByName(name).orElse(null);
     }
 
     public MatchingHero getSuperHero(UUID heroId) {
         Optional<SuperHero> found = this.superHeroRepository.findById(heroId);
-        return Optional.ofNullable(found).map(sp -> new MatchingHero(sp.get())).orElse(null);
+        return found.map(MatchingHero::new).orElse(null);
     }
 }

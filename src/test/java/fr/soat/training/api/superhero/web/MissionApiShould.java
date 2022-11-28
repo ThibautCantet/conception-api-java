@@ -1,5 +1,10 @@
 package fr.soat.training.api.superhero.web;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 import fr.soat.training.api.superhero.domain.HistoricEvent;
 import fr.soat.training.api.superhero.domain.Mission;
 import fr.soat.training.api.superhero.domain.builders.HistoricEventBuilder;
@@ -11,7 +16,6 @@ import fr.soat.training.api.superhero.services.domain.MatchingMission;
 import fr.soat.training.api.superhero.web.requests.CreateHistoryEventRequest;
 import fr.soat.training.api.superhero.web.requests.CreateMissionRequest;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,18 +24,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 
 class MissionApiShould extends APIsBaseComponentTest{
     private static final String ALL_MISSIONS = "missions/";
@@ -91,7 +88,7 @@ class MissionApiShould extends APIsBaseComponentTest{
         UUID fakeMissionId = UUID.randomUUID();
         MatchingMission theMission = new MatchingMission("Save the world Batman !!", "Batman", fakeMissionId);
 
-        when(missionService.getMission(fakeMissionId)).thenReturn(theMission);
+        when(missionService.getMatchingMission(fakeMissionId)).thenReturn(theMission);
 
         this.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -101,7 +98,7 @@ class MissionApiShould extends APIsBaseComponentTest{
                 .and()
                 .body("title", equalTo(theMission.getTitle()));
 
-        verify(missionService).getMission(fakeMissionId);
+        verify(missionService).getMatchingMission(fakeMissionId);
     }
 
     @Test
@@ -129,7 +126,7 @@ class MissionApiShould extends APIsBaseComponentTest{
         HistoricEvent secondEvent = new HistoricEventBuilder().createAction("another action").madeDuringTheMission(aMission).build();
 
         List<MatchingHistoricEvent> historicEvents = Arrays.asList(firstEvent, secondEvent).stream().map(he -> new MatchingHistoricEvent(he))
-                .collect(Collectors.toList());
+                .toList();
 
         when(historicEventService.retrieveAllEventsOfAMission(fakeMissionId)).thenReturn(historicEvents);
 

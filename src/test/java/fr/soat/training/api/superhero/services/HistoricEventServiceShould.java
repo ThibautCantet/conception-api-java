@@ -46,8 +46,7 @@ public class HistoricEventServiceShould {
         UUID fakeMissionId = UUID.randomUUID();
         SuperHero malicia = new SuperHeroBuilder().createSuperHero("malicia");
         Mission aMission = new MissionBuilder().createMission("To save the X-Men!").assignedTo(malicia).build();
-        MatchingMission matchingMission = new MatchingMission(aMission);
-        when(missionService.getMission(any(UUID.class))).thenReturn(matchingMission);
+        when(missionService.getMission(any(UUID.class))).thenReturn(aMission);
 
         historicEventService.createNewEventOnMission(fakeMissionId, "Save the world");
 

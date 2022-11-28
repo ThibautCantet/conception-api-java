@@ -1,39 +1,44 @@
 package fr.soat.training.api.superhero.web;
 
+import java.net.URI;
+import java.util.List;
+import java.util.UUID;
+
 import fr.soat.training.api.superhero.services.HistoricEventService;
 import fr.soat.training.api.superhero.services.MissionService;
 import fr.soat.training.api.superhero.services.domain.MatchingHistoricEvent;
 import fr.soat.training.api.superhero.services.domain.MatchingMission;
 import fr.soat.training.api.superhero.web.requests.CreateHistoryEventRequest;
 import fr.soat.training.api.superhero.web.requests.CreateMissionRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping(path = "/api/v1/missions/")
 public class MissionApi {
 
-    @Autowired
-    private MissionService missionService;
+    private final MissionService missionService;
+    private final HistoricEventService historicEventService;
 
-    @Autowired
-    private HistoricEventService historicEventService;
+    public MissionApi(MissionService missionService, HistoricEventService historicEventService) {
+        this.missionService = missionService;
+        this.historicEventService = historicEventService;
+    }
 
     @GetMapping()
-    public ResponseEntity<?> getMissions() {
+    public ResponseEntity<List<MatchingMission>> getMissions() {
         List<MatchingMission> allTheMissions = this.missionService.getAllTheMissions();
         return ResponseEntity.ok().body(allTheMissions);
     }
 
     @PostMapping()
-    public ResponseEntity<?> createNewMission(@RequestBody CreateMissionRequest request){
+    public ResponseEntity<String> createNewMission(@RequestBody CreateMissionRequest request){
         MatchingMission newMission = this.missionService.createAMissionFor(request.getAssignedHero(), request.getTitle());
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -44,13 +49,13 @@ public class MissionApi {
     }
 
     @GetMapping(value = "{uuid}")
-    public ResponseEntity<?> getMission(@PathVariable String uuid){
-        MatchingMission mission = this.missionService.getMission(UUID.fromString(uuid));
+    public ResponseEntity<MatchingMission> getMission(@PathVariable String uuid){
+        MatchingMission mission = this.missionService.getMatchingMission(UUID.fromString(uuid));
         return ResponseEntity.ok(mission);
     }
 
     @GetMapping(value = "{uuid}/history-events")
-    public ResponseEntity<?> getMissionEvents(@PathVariable String uuid){
+    public ResponseEntity<List<MatchingHistoricEvent>> getMissionEvents(@PathVariable String uuid){
         List<MatchingHistoricEvent> matchingHistoricEvents = historicEventService.retrieveAllEventsOfAMission(UUID.fromString(uuid));
         if (matchingHistoricEvents.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -59,7 +64,7 @@ public class MissionApi {
     }
 
     @PostMapping(value = "{uuid}/history-events")
-    public ResponseEntity<?> createANewEvent(@PathVariable String uuid, @RequestBody final CreateHistoryEventRequest request){
+    public ResponseEntity<URI> createANewEvent(@PathVariable String uuid, @RequestBody final CreateHistoryEventRequest request){
 
         this.historicEventService.createNewEventOnMission(UUID.fromString(uuid), request.getDescription());
 

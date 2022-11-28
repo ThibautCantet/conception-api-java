@@ -16,7 +16,7 @@ public class MissionBuilder {
 
     public MissionBuilder assignedTo(SuperHero superman) {
         if (this.mission == null) {
-            throw new IllegalArgumentException("the mission is mandataroy");
+            throw new IllegalArgumentException("the mission is mandatory");
         }
         this.mission.setAssignedHero(superman);
 
@@ -25,7 +25,7 @@ public class MissionBuilder {
 
     public MissionBuilder assignedTo(String heroName) {
         if (this.mission == null) {
-            throw new IllegalArgumentException("the mission is mandataroy");
+            throw new IllegalArgumentException("the mission is mandatory");
         }
         SuperHero hero = new SuperHero(heroName);
         this.mission.setAssignedHero(hero);
@@ -35,18 +35,18 @@ public class MissionBuilder {
 
     public Mission build() {
         if (this.mission == null) {
-            throw new IllegalArgumentException("the mission is mandataroy");
+            throw new IllegalArgumentException("the mission is mandatory");
         }
 
         if (this.mission.getAssignedHero() == null) {
-            throw new IllegalArgumentException(" the hero is mandataroy");
+            throw new IllegalArgumentException(" the hero is mandatory");
         }
         return this.mission;
     }
 
     public MissionBuilder withUUID(UUID missionId) {
         if (this.mission == null) {
-            throw new IllegalArgumentException("the mission is mandataroy");
+            throw new IllegalArgumentException("the mission is mandatory");
         }
         this.mission.setMissionId(missionId);
         return this;

@@ -1,5 +1,10 @@
 package fr.soat.training.api.superhero.web;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+
 import fr.soat.training.api.superhero.domain.SuperHero;
 import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
 import fr.soat.training.api.superhero.services.SuperHeroService;
@@ -7,20 +12,16 @@ import fr.soat.training.api.superhero.services.domain.MatchingHero;
 import fr.soat.training.api.superhero.web.requests.CreateSuperHeroRequest;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.springframework.http.HttpStatus.OK;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 
 public class SuperHeroApiShould extends APIsBaseComponentTest {
 
@@ -34,7 +35,7 @@ public class SuperHeroApiShould extends APIsBaseComponentTest {
         SuperHero batman = new SuperHeroBuilder().createSuperHero("Batman");
         SuperHero malicia = new SuperHeroBuilder().createSuperHero("Malicia");
         List<MatchingHero> heroesFound = Arrays.asList(batman, malicia).stream().map(sh -> new MatchingHero(sh))
-                .collect(Collectors.toList());
+                .toList();
 
         Mockito.when(superHeroService.findAllTheMissions()).thenReturn(heroesFound);
 

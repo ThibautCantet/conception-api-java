@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +70,7 @@ public class MissionServiceShould {
 
         when(this.missionRepository.findById(any(UUID.class))).thenReturn(Optional.of(found));
 
-        this.missionService.getMission(missionUUID);
+        this.missionService.getMatchingMission(missionUUID);
 
         verify(this.missionRepository).findById(missionUUID);
     }
@@ -82,7 +81,7 @@ public class MissionServiceShould {
         Mission found = new MissionBuilder().createMission("Put the levitation mantle").assignedTo(doctorStrange).build();
         when(this.missionRepository.findById(any(UUID.class))).thenReturn(Optional.of(found));
 
-        MatchingMission mission = this.missionService.getMission(UUID.randomUUID());
+        MatchingMission mission = this.missionService.getMatchingMission(UUID.randomUUID());
 
         assertThat(mission)
                 .isNotNull()
@@ -95,27 +94,29 @@ public class MissionServiceShould {
         SuperHero doctorStrange = new SuperHeroBuilder().createSuperHero("Dr. Strange");
         Mission found = new MissionBuilder().createMission("Put the levitation mantle")
                 .withUUID(UUID.randomUUID()).assignedTo(doctorStrange).build();
-        MatchingHero randomHero = new MatchingHero("hero", UUID.randomUUID());
+        SuperHero randomHero = new SuperHero("hero");
 
-        when(this.superHeroService.getTheSuperHeroMatching(Mockito.anyString())).thenReturn(randomHero);
+        when(this.superHeroService.getTheSuperHero(Mockito.anyString())).thenReturn(randomHero);
         when(this.missionRepository.saveAndFlush(Mockito.any(Mission.class))).thenReturn(found);
 
         String superHeroName = "Batman";
 
         this.missionService.createAMissionFor(superHeroName, "random");
 
-        verify(this.superHeroService).getTheSuperHeroMatching(superHeroName);
+        verify(this.superHeroService).getTheSuperHero(superHeroName);
     }
 
     @Test
     void call_the_saveAndFlush_operation_on_mission_when_the_creation_of_a_mission_is_requested() {
-        MatchingHero hero = new MatchingHero("Wolverine", LocalDateTime.now());
+        //MatchingHero hero = new MatchingHero("Wolverine", LocalDateTime.now());
+        SuperHero superHero = new SuperHero("Wolverine");
         Mission found = new MissionBuilder().createMission("Put the levitation mantle")
-                .withUUID(UUID.randomUUID()).assignedTo(hero.getName()).build();
+                .withUUID(UUID.randomUUID()).assignedTo(superHero.getName()).build();
 
         when(this.missionRepository.saveAndFlush(Mockito.any(Mission.class))).thenReturn(found);
 
-        when(this.superHeroService.getTheSuperHeroMatching(Mockito.anyString())).thenReturn(hero);
+        //when(this.superHeroService.getTheSuperHeroMatching(Mockito.anyString())).thenReturn(hero);
+        when(this.superHeroService.getTheSuperHero(Mockito.anyString())).thenReturn(superHero);
 
         this.missionService.createAMissionFor("Wolverine", "To save Yashida!");
 
