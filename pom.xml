@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<mockito.version>3.3.3</mockito.version>
+		<mockito.version>4.8.0</mockito.version>
 		<rest-assured.version>3.3.0</rest-assured.version>
 	</properties>
 	<dependencies>
