@@ -3,7 +3,6 @@ package fr.soat.training.api.superhero.services;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import fr.soat.training.api.superhero.domain.SuperHero;
 import fr.soat.training.api.superhero.domain.builders.SuperHeroBuilder;
